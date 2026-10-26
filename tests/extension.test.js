@@ -10,6 +10,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 test('manifest and scripts use only the intended host and local files', () => {
   const manifest = JSON.parse(read('manifest.json'));
   assert.equal(manifest.manifest_version, 3);
+  assert.ok(manifest.description.length <= 132, 'description fits the Chrome manifest limit');
   assert.deepEqual(manifest.host_permissions, ['https://cyber.blooket.com/*']);
   assert.deepEqual(manifest.content_scripts[0].matches, manifest.host_permissions);
   assert.deepEqual(manifest.permissions.sort(), ['scripting', 'storage']);

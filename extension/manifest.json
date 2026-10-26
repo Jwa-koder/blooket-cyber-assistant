@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Blooket Cyber Assistant",
   "version": "2.0.0",
-  "description": "Learn from visible answer feedback in Cyber Hack. Highlight learned answers, automate known answers and outputs, and press O to stop.",
+  "description": "Learn Cyber Hack answers from visible feedback. Highlight known answers, select outputs, use answer keys, and press O to stop.",
   "permissions": [
     "storage",
     "scripting"
