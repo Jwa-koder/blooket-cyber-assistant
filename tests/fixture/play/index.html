@@ -1,0 +1,35 @@
+<!doctype html><meta charset="utf-8"><title>Cyber adapter regression fixture</title>
+<style>body{font:20px system-ui;margin:40px;background:#ebf2fb}.answerFace{display:block;background:#6c6;padding:24px}button,[role=button]{padding:16px;margin:8px;border:1px solid #999;background:#fff;display:inline-block;cursor:pointer}#game{max-width:700px}</style>
+<h1>Cyber adapter regression fixture</h1><p>This local fixture reproduces the visible question, feedback, and output controls observed in the private test game.</p>
+<p id="leaked">Panel clicks isolated</p><p id="counts">Answers: 0; Outputs: 0</p><div id="game"></div>
+<script>
+  const game = document.getElementById('game');
+  const counts = document.getElementById('counts');
+  let answered = 0, outputs = 0;
+  function update() { counts.textContent = `Answers: ${answered}; Outputs: ${outputs}`; }
+  function question() {
+    game.innerHTML = '<div class="_questionText_fixture">Alpha?</div><div class="_answersWrapper_fixture"><button class="_answerButton_fixture" type="button"><span class="_answerFront_fixture answerFace">h</span></button><button class="_answerButton_fixture" type="button"><span class="_answerFront_fixture answerFace">k</span></button></div>';
+    document.addEventListener('click', event => { if(event.target.matches('[data-cyber-assistant]')) document.getElementById('leaked').textContent = 'Panel clicks leaked'; }, {once:true});
+    game.querySelectorAll('button').forEach(button => button.onclick = () => {
+      answered++; update();
+      game.querySelectorAll('button').forEach(answer => {
+        answer.disabled = true;
+        if(answer.textContent === 'h') answer.insertAdjacentHTML('afterbegin', '<svg data-icon="check" width="16" height="16" aria-hidden="true"><path d="M0 0h8v8z"/></svg>');
+      });
+      game.insertAdjacentHTML('afterbegin', '<p>' + (button.textContent === 'h' ? 'CORRECT' : 'INCORRECT') + '</p>');
+      const next = document.createElement('div'); next.textContent = 'Press Anywhere to Continue'; next.onclick = reward; game.append(next);
+    });
+  }
+  function reward() {
+    game.innerHTML = '<div class="_feedbackContainer_fixture" role="button" tabindex="0"><div>Choose an Output</div><div class="_choice_fixture" role="button" tabindex="0"><div>?</div></div><div class="_choice_fixture" role="button" tabindex="0"><div>?</div></div><div class="_choice_fixture" role="button" tabindex="0"><div>?</div></div></div>';
+    game.querySelectorAll('._choice_fixture').forEach(choice => choice.onclick = () => {
+      outputs++; update();
+      const revealed = document.createElement('img'); revealed.alt = 'Reward revealed'; choice.parentElement.prepend(revealed);
+      setTimeout(() => {
+        if(outputs < 2) question(); else game.innerHTML = '<h2>Fixture complete</h2><p>Two rounds completed.</p>';
+      }, 1600);
+    });
+  }
+  question();
+</script>
+<script src="../../../extension/assistant.js"></script>
